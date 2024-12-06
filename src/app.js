@@ -3,9 +3,20 @@ const express=require("express");
 const app=express();
 
 //reques handler
-app.use((req,res)=>{
+
+app.use("/test/1",(req,res)=>{
+    res.send({'status':'success','msg':"successfully get msg id which 4"});
+})
+//manage routs in express::
+app.use("/test",(req,res)=>{
     res.send({'status':'success','msg':"successfully listening"});
 })
+
+
+app.use("/",(req,res)=>{
+    res.send("base url functionality::");
+})
+
 
 //server listen
 app.listen(4000,()=>{
