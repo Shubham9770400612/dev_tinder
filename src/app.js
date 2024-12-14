@@ -2,13 +2,17 @@ const express=require("express");
   
 const app=express();
 
+const auth=require('./middleware/auth');
+
+console.log(auth.middleware);
+
 // Middleware to parse JSON body
 app.use(express.json());
 
 //reques handler
 
 // basic route
-app.get("/product",(req,res)=>{
+app.get("/product",auth.middleware,(req,res)=>{
     res.send("list of product availble here");
 })
 
