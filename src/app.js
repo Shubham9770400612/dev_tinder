@@ -4,7 +4,10 @@ const app=express();
 
 const auth=require('./middleware/auth');
 
+const dbconnection=require("./database/db")
+
 console.log(auth.middleware);
+
 
 // Middleware to parse JSON body
 app.use(express.json());
