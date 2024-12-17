@@ -4,75 +4,65 @@ const app=express();
 
 const auth=require('./middleware/auth');
 
-const dbconnection=require("./database/db")
+const dbconnection=require("./database/db");
 
-console.log(auth.middleware);
+const User = require('./models/users');
+
+// console.log(auth.middleware);
+// console.log(dbconnection);
 
 
 // Middleware to parse JSON body
 app.use(express.json());
 
-//reques handler
 
-// basic route
-app.get("/product",auth.middleware,(req,res)=>{
-    res.send("list of product availble here");
-})
+ // Import User model
 
-app.get("/getuser",(req,res)=>{
-    res.send("list of users::");
-})
-
-//route with parameters::
-
-app.get("/users/:id",(req,res)=>{
-    //get id or other thing from url use req.params
-    let user_id=req.params.id;
-    res.send(`here is user id ${user_id}`)
-})
-app.get("/users/:id/:book_id",(req,res)=>{
-    //get id or other thing from url use req.params
-    let user_id=req.params.id;
-    let book_id=req.params.book_id;
-    res.send(`here is user id ${user_id} and book id is ${book_id}`)
-})
-
-//query parameters:
-//query parameter is pass after url with ? symbol ::
-app.get('/queryparameter',(req,res)=>{
-    console.log(req.query);
-    const {first,second}=req.query;
-    res.send(`first val is ${first} and second one is ${second}`);
-})
-
-app.get('/login', (req, res) => { // Access data from the body
-    res.send(`login successfully ::`);
-  });
+// POST API to create a new user
+app.post('/create', async (req, res) => {
+    try {
+        const newUser = new User({
+            firstName: "Shubham12",
+            lastName: "Dudhe12",
+            email: "dudheshubham6127@yopmail.com",
+            password: "J12h@123"
+        });
 
 
-  app.post('/login', (req, res) => {
-    const { username, password } = req.body; // Access data from the body
-    res.send(`Username: ${username}, Password: ${password}`);
-  });
+        // Save the user to the database
+        const savedUser = await newUser.save();
+
+        res.status(201).json({
+            message: 'User created successfully',
+            user: savedUser
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Error creating user', details: error.message });
+    }
+});
 
 
+const startServer=async ()=>{
+    try{
+        await dbconnection.connectToDatabase();
+        console.log("Database connected successfully.");
+        app.listen(4000,()=>{
+            console.log("Server is successfully listing on port 4000....");
+        });
 
-
-
-app.post("product?user_id=1",(req,res)=>{
-    console.log(req.params);
-    console.log("geting user id");
-    
-})
+    }
+    catch(err){
+        console.error("Failed to connect to the database:", err);
+        process.exit(1); // Exit the process if DB connection fails
+    }
+}
+startServer();
 
 
 app.use("/",(req,res)=>{
-   return  res.send("base url functionality::");
-})
-
-
+    return  res.send("base url functionality::");
+ })
 //server listen
-app.listen(4000,()=>{
-    console.log("Server is successfully listing on port 4000....");
-});
+
 console.log("Creating project using mongodb,node.js and react.js ");  
