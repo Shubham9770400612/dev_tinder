@@ -21,16 +21,16 @@ app.use(express.json());
 // POST API to create a new user
 app.post('/create', async (req, res) => {
     try {
-        const newUser = new User({
-            firstName: "Shubham12",
-            lastName: "Dudhe12",
-            email: "dudheshubham6127@yopmail.com",
-            password: "J12h@123"
-        });
-
-
+        // const newUser = new User({
+        //     firstName: "Shubham12",
+        //     lastName: "Dudhe12",
+        //     email: "dudheshubham6127@yopmail.com",
+        //     password: "J12h@123"
+        // });
+        const saveUser=new User(req.body)
+        console.log("line number 31",req.body)
         // Save the user to the database
-        const savedUser = await newUser.save();
+        const savedUser = await saveUser.save();
 
         res.status(201).json({
             message: 'User created successfully',
@@ -41,6 +41,41 @@ app.post('/create', async (req, res) => {
         res.status(400).json({ error: 'Error creating user', details: error.message });
     }
 });
+
+//get user list::
+
+app.get("/getUsers",async (req,res)=>{
+    try {
+      
+        const userList =await User.find({});
+        // await MyModel.find({});
+
+        res.status(201).json({
+            message: 'getting user successfully',
+            user: userList
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: 'Error gettting user', details: error.message });
+    }
+})
+
+//delete user::
+
+app.post("/deleteUser", async (req,res)=>{
+    const userId=req.body.userId;
+    try{
+       const delete1=User.findOneAndDelete({_id:userId}); 
+       res.status(201).json({
+        message: 'getting user successfully',
+        user: delete1
+    });
+    }
+    catch (error) {
+        res.status(400).json({ error: 'Error gettting user', details: error.message });
+    }
+
+})
 
 
 const startServer=async ()=>{
