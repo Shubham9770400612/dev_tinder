@@ -1,5 +1,7 @@
 const express=require("express");
   
+//use bcrypt method for password
+
 const app=express();
 
 const auth=require('./middleware/auth');
@@ -7,6 +9,7 @@ const auth=require('./middleware/auth');
 const dbconnection=require("./database/db");
 
 const User = require('./models/users');
+const bcrypt=require("bcrypt");
 
 // console.log(auth.middleware);
 // console.log(dbconnection);
@@ -21,14 +24,11 @@ app.use(express.json());
 // POST API to create a new user
 app.post('/create', async (req, res) => {
     try {
-        // const newUser = new User({
-        //     firstName: "Shubham12",
-        //     lastName: "Dudhe12",
-        //     email: "dudheshubham6127@yopmail.com",
-        //     password: "J12h@123"
-        // });
-        const saveUser=new User(req.body)
+        let hashpassword=await bcrypt.hash(req.body.password,10);
+        req.body.password=hashpassword;
+
         console.log("line number 31",req.body)
+        const saveUser=new User(req.body)
         // Save the user to the database
         const savedUser = await saveUser.save();
 
@@ -41,6 +41,44 @@ app.post('/create', async (req, res) => {
         res.status(400).json({ error: 'Error creating user', details: error.message });
     }
 });
+
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find the user by email
+        let findUser = await User.findOne({ email: email }).exec();
+        // console.log(findUser, "usersher");
+
+        if (findUser) {
+            // Compare password
+            let ismatchPassword = await bcrypt.compare(password, findUser.password);
+            if (ismatchPassword) {
+                console.log("login successfully:");
+                
+                return res.status(200).json({
+                    message: 'Login successfully'
+                });
+            } else {
+                console.log("password is invalid:");
+                
+                return res.status(201).json({
+                    message: 'Password is wrong'
+                });
+            }
+        } else {
+            return res.status(201).json({
+                message: 'Email id does not exist'
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            error: 'Error during login',
+            details: error.message
+        });
+    }
+});
+
 
 //get user list::
 
@@ -64,11 +102,31 @@ app.get("/getUsers",async (req,res)=>{
 
 app.post("/deleteUser", async (req,res)=>{
     const userId=req.body.userId;
+    console.log("userId",userId);
+    
     try{
-       const delete1=User.findOneAndDelete({_id:userId}); 
+       await User.findOneAndDelete({_id:userId}); 
        res.status(201).json({
-        message: 'getting user successfully',
-        user: delete1
+        message: 'User Deleted successfully',
+    });
+    }
+    catch (error) {
+        res.status(400).json({ error: 'Error gettting user', details: error.message });
+    }
+
+})
+
+//updating the users::
+
+app.post("/updateUser", async (req,res)=>{
+    const userInfo=req.body;
+    console.log("userInfo",userInfo);
+    const id=req.body._id;
+    
+    try{
+        await User.findOneAndUpdate({ _id: id },userInfo);
+        res.status(201).json({
+        message: 'User updated successfully',
     });
     }
     catch (error) {
