@@ -1,8 +1,12 @@
 const express=require("express");
+
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
   
 //use bcrypt method for password
 
 const app=express();
+
 
 const auth=require('./middleware/auth');
 
@@ -17,6 +21,9 @@ const bcrypt=require("bcrypt");
 
 // Middleware to parse JSON body
 app.use(express.json());
+app.use(cookieParser());
+
+const SECRET_KEY='shubhu022';
 
 
  // Import User model
@@ -55,6 +62,15 @@ app.post('/login', async (req, res) => {
             let ismatchPassword = await bcrypt.compare(password, findUser.password);
             if (ismatchPassword) {
                 console.log("login successfully:");
+                const {firstName,id}=findUser;
+                const token = jwt.sign({firstName,id}, SECRET_KEY, { expiresIn: '1h' });
+
+                // Set JWT as HTTP-only cookie
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        secure: true, // Set true in production if using HTTPS
+                        sameSite: 'strict',
+                    });
                 
                 return res.status(200).json({
                     message: 'Login successfully'
@@ -78,11 +94,48 @@ app.post('/login', async (req, res) => {
         });
     }
 });
+const varifyToken=(req,res,next)=> {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized: No token provided' });
+    }
+
+    try {
+        const user = jwt.verify(token, SECRET_KEY);
+        if(user){
+            req.user=user;
+            next();
+        }
+        else{
+            res.status(403).json({ message: 'user not fournd' });
+        }
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid or expired token!' });
+    }
+};
+app.get("/profile",varifyToken,(req,res)=>{
+      try{
+        res.status(201).json({
+            message: 'getting user successfully',
+            user: req.user
+        });
+      }
+      catch(err){
+        res.send(err.message);
+      }
+});
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.send({ message: 'Logged out successfully!' });
+});
+
 
 
 //get user list::
 
-app.get("/getUsers",async (req,res)=>{
+app.get("/getUsers",async (req,res)=>{  
     try {
       
         const userList =await User.find({});
