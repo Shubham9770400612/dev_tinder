@@ -9,6 +9,8 @@ const app=express();
 
 
 const auth=require('./middleware/auth');
+const validation=require("./validation/validation");
+
 
 const dbconnection=require("./database/db");
 
@@ -29,7 +31,7 @@ const SECRET_KEY='shubhu022';
  // Import User model
 
 // POST API to create a new user
-app.post('/create', async (req, res) => {
+app.post('/create',validation.validateUserInput, async (req, res) => {
     try {
         let hashpassword=await bcrypt.hash(req.body.password,10);
         req.body.password=hashpassword;
