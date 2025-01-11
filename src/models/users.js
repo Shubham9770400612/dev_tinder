@@ -40,6 +40,8 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+//here is functionality of mogoose schema method that help you to more easy way to make common fucntionalify::
+
 // Create User model
 const User = mongoose.model('User', userSchema);
 

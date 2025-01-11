@@ -2,7 +2,7 @@ const express=require("express");
 
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-  
+
 //use bcrypt method for password
 
 const app=express();
