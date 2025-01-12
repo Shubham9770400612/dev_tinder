@@ -25,6 +25,10 @@ const bcrypt=require("bcrypt");
 app.use(express.json());
 app.use(cookieParser());
 
+const varifyToken=require("./middleware/authUser");
+console.log(varifyToken,"varifytoken");
+
+
 const SECRET_KEY='shubhu022';
 
 
@@ -96,27 +100,8 @@ app.post('/login', async (req, res) => {
         });
     }
 });
-const varifyToken=(req,res,next)=> {
-    const token = req.cookies.token;
 
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized: No token provided' });
-    }
-
-    try {
-        const user = jwt.verify(token, SECRET_KEY);
-        if(user){
-            req.user=user;
-            next();
-        }
-        else{
-            res.status(403).json({ message: 'user not fournd' });
-        }
-    } catch (err) {
-        res.status(403).json({ message: 'Invalid or expired token!' });
-    }
-};
-app.get("/profile",varifyToken,(req,res)=>{
+app.get("/profile",varifyToken.varifyToken,(req,res)=>{
       try{
         res.status(201).json({
             message: 'getting user successfully',
