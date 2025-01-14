@@ -113,9 +113,18 @@ app.get("/profile",varifyToken.varifyToken,(req,res)=>{
       }
 });
 
+
+app.post("/sentConnectionResquest",varifyToken.varifyToken,(req,res)=> {
+    console.log("Connection is established");
+    const user=req.user;
+    console.log(user,"line number 120");
+    
+    res.send(`${user.firstName} user send the request:`);
+})
+
 app.post('/logout', (req, res) => {
     res.clearCookie('token');
-    res.send({ message: 'Logged out successfully!' });
+    res.send({ message: 'Logged out successfully!' }); 
 });
 
 
