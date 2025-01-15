@@ -65,11 +65,13 @@ app.post('/login', async (req, res) => {
 
         if (findUser) {
             // Compare password
-            let ismatchPassword = await bcrypt.compare(password, findUser.password);
+            // let ismatchPassword = await bcrypt.compare(password, findUser.password);
+            let ismatchPassword = await findUser.checkPassword(password);
             if (ismatchPassword) {
                 console.log("login successfully:");
-                const {firstName,id}=findUser;
-                const token = jwt.sign({firstName,id}, SECRET_KEY, { expiresIn: '1h' });
+                // const {firstName,id}=findUser;
+                // const token = jwt.sign({firstName,id}, SECRET_KEY, { expiresIn: '1h' });
+                const token=await findUser.getJwtToken();
 
                 // Set JWT as HTTP-only cookie
                     res.cookie('token', token, {
