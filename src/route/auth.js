@@ -80,4 +80,10 @@ router.post('/login', async (req, res) => {
     }
 });
 
-module.exports=router
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.send({ message: 'Logged out successfully!' }); 
+});
+
+module.exports=router 
