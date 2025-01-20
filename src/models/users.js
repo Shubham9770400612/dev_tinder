@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
         // max:[100,'Must be at least 04 between 100']
     },
     hobbies:{
-        type:String,
+        type:String, 
         enum: {
             values: ['Coffee', 'Tea']
           }

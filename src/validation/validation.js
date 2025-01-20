@@ -27,4 +27,17 @@ const validateUserInput = (req, res, next) => {
     next();
   };
 
-  module.exports={validateUserInput}
+  const ProfileDataValid=function(req){
+    const allowField=[
+      "firstName",
+      "lastName",
+      "email",
+      "age",
+      "hobbies"
+    ]
+    const valid=Object.keys(req.body).every((value)=> allowField.includes(value));
+    return valid;
+
+
+  }
+  module.exports={validateUserInput,ProfileDataValid}
