@@ -7,6 +7,8 @@ const dbconnection=require("./database/db");
 const authRoute=require("./route/auth");
 const profileRoute=require("./route/profile");
 
+const request=require("./route/request");
+
 // console.log(auth.middleware);
 // console.log(dbconnection);
 
@@ -19,6 +21,7 @@ app.use(cookieParser());
 // POST API to create a new user
 app.use("/",authRoute);
 app.use("/",profileRoute);
+app.use("/",request);
 
 
 
