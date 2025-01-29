@@ -11,7 +11,7 @@ const sendRequest= new mongoose.Schema({
   },
   status:{
     type:String,
-    enum: ['pending', 'in-progress', 'completed']  },
+    enum: ['interest', 'notinerest', 'accept','reject']  },
     createdAt: {
         type: Date,
         default: Date.now // Automatically sets the current date
