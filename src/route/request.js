@@ -11,9 +11,6 @@ router.post("/request/ConnectionRequest/:status/:userId", varifyToken, async (re
         const status = req.params.status;
         const toUserId = req.params.userId;
         const fromUserId = req.user.id;
-
-        // console.log("Status:", status, "To User ID:", toUserId);
-
         // Allowed status values
         const allowedStatus = ["interest", "notinterest"];
 
@@ -34,8 +31,6 @@ router.post("/request/ConnectionRequest/:status/:userId", varifyToken, async (re
                 { fromUserId: toUserId, toUserId: fromUserId }
             ]
         });
-
-        console.log("Existing Request:", isRequestExist);
 
         if (isRequestExist) {
             return res.status(409).json({ message: "Connection request already exists." });
@@ -65,4 +60,30 @@ router.post("/request/ConnectionRequest/:status/:userId", varifyToken, async (re
     }
 });
 
+router.post("/request/connectionStatus/:status/:userId", varifyToken, async (req, res) => {
+   const reqUserId=req.params.userId;
+   const status=req.params.status;
+   const loggedInUserId=req.user.id;
+   if(loggedInUserId==reqUserId){
+    return res.status(400).json({ message: "You cannot send a request to yourself." });
+   }
+   const allowedStatus=['accept','reject'];
+   if(!allowedStatus.includes(status)){
+    return res.status(400).json({ message: "Invalid status provided." });
+   }
+   const IsConnectionExits=await Request.findOne({fromUserId:reqUserId,toUserId:loggedInUserId,status:'interest'});
+   if(IsConnectionExits){
+    const updatedRequest = await Request.findOneAndUpdate(
+        { _id: IsConnectionExits._id }, // Use _id to find the document
+        { $set: { status: status } },   // Update operation
+        { new: true }                   // Return updated document
+      );       
+       if(updatedRequest){
+            return res.status(200).json({ message:`your request with status ${status} has been approved`,result:updatedRequest });
+        }
+        return res.status(400).json({message:"some error occuring while updating the status"});
+    }
+    return res.status(400).json({message:"provided details are wrong"});
+    
+});
 module.exports=router;

@@ -6,7 +6,6 @@ const User = require('../models/users');
 
 const varifyToken=(req,res,next)=> {
     const token = req.cookies.token;
-    console.log(token,"token");
 
 
     if (!token) {
@@ -16,9 +15,6 @@ const varifyToken=(req,res,next)=> {
     try {
         const user = jwt.verify(token, SECRET_KEY);
         let findUser = User.findById({ _id: user.id });
-        // console.log(findUser,"restgi");
-        // console.log(user,"user here");
-        
         if(user){
             req.user=user;
             req.userDetails=findUser; 

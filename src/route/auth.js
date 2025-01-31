@@ -17,7 +17,6 @@ router.post('/create',validation.validateUserInput, async (req, res) => {
         let hashpassword=await bcrypt.hash(req.body.password,10);
         req.body.password=hashpassword;
 
-        console.log("line number 31",req.body)
         const saveUser=new User(req.body)
         // Save the user to the database
         const savedUser = await saveUser.save();
@@ -38,16 +37,12 @@ router.post('/login', async (req, res) => {
 
         // Find the user by email
         let findUser = await User.findOne({ email: email }).exec();
-        // console.log(findUser, "usersher");
 
         if (findUser) {
             // Compare password
             // let ismatchPassword = await bcrypt.compare(password, findUser.password);
             let ismatchPassword = await findUser.checkPassword(password);
             if (ismatchPassword) {
-                console.log("login successfully:");
-                // const {firstName,id}=findUser;
-                // const token = jwt.sign({firstName,id}, SECRET_KEY, { expiresIn: '1h' });
                 const token=await findUser.getJwtToken();
 
                 // Set JWT as HTTP-only cookie
@@ -61,7 +56,6 @@ router.post('/login', async (req, res) => {
                     message: 'Login successfully'
                 });
             } else {
-                console.log("password is invalid:");
                 
                 return res.status(201).json({
                     message: 'Password is wrong'

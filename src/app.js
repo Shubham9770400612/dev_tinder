@@ -9,9 +9,6 @@ const profileRoute=require("./route/profile");
 
 const request=require("./route/request");
 
-// console.log(auth.middleware);
-// console.log(dbconnection);
-
 
 // Middleware to parse JSON body
 app.use(express.json());
