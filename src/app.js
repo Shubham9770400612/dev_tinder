@@ -6,6 +6,7 @@ const app=express();
 const dbconnection=require("./database/db");
 const authRoute=require("./route/auth");
 const profileRoute=require("./route/profile");
+const userRoute=require("./route/user");
 
 const request=require("./route/request");
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/",authRoute);
 app.use("/",profileRoute);
 app.use("/",request);
+app.use("/",userRoute);
 
 
 

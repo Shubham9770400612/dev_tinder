@@ -16,7 +16,7 @@ router.post("/request/ConnectionRequest/:status/:userId", varifyToken, async (re
 
         // Validate status
         if (!allowedStatus.includes(status)) {
-            return res.status(400).json({ message: "Invalid status provided." });
+            return res.status(400).json({ message: "Invalid status provided12." });
         }
 
         // Prevent self-request
