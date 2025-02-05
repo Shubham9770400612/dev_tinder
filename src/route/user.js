@@ -39,5 +39,28 @@ router.get("/users/getConnectionList", varifyToken, async (req, res) => {
     }
 });
 
+router.get("/users/getInterestList",varifyToken, async (req,res)=>{
+    try {
+        const userId = req.user.id;
+
+        // Fetch user connections
+        const interestedUserList = await Request.find({
+            status: 'interest',toUserId:userId
+        }).select('_id status')
+        .populate('fromUserId', 'firstName lastName email age')
+
+        const result=interestedUserList.map( key =>{
+            return key.fromUserId
+        });
+        console.log("line number 55",result);
+        
+        // Send formatted data as API response
+        res.status(200).json({ success: true, connections: interestedUserList });
+
+    } catch (error) {
+        console.error("Error in fetching user connections:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });  
+    }
+});
 
 module.exports=router;

@@ -19,8 +19,8 @@ app.use(cookieParser());
 // POST API to create a new user
 app.use("/",authRoute);
 app.use("/",profileRoute);
-app.use("/",request);
 app.use("/",userRoute);
+app.use("/",request);
 
 
 
